@@ -51,6 +51,9 @@ public:
   virtual const char* getManufacturerName() const = 0;
   virtual void onBeforeTransmit() { }
   virtual void onAfterTransmit() { }
+  // Called by the radio wrapper once a packet has been read from the radio
+  // (eg. to drive an RX activity indicator). Default no-op.
+  virtual void onPacketReceived() { }
   virtual void reboot() = 0;
   virtual void powerOff() { /* no op */ }
   // Called by example setup() functions to signal that boot is complete.

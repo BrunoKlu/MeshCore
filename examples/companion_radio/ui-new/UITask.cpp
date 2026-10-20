@@ -6,6 +6,9 @@
 #ifdef ENABLE_WIFI_INTERFACE
   #include <WiFi.h>
 #endif
+#ifdef HAS_RGB_STATUS_LED
+  #include <helpers/ui/RgbStatusLed.h>
+#endif
 
 #ifndef AUTO_OFF_MILLIS
   #define AUTO_OFF_MILLIS     15000   // 15 seconds
@@ -791,6 +794,21 @@ switch(t){
     vibration.trigger();
   }
 #endif
+
+#ifdef HAS_RGB_STATUS_LED
+  switch (t) {
+    case UIEventType::contactMessage:
+    case UIEventType::newContactMessage:
+      rgb_led.onDirectMessage();
+      break;
+    case UIEventType::channelMessage:
+    case UIEventType::roomMessage:
+      rgb_led.onChannelMessage();
+      break;
+    default:
+      break;
+  }
+#endif
 }
 
 void UITask::onMessageRecv(mesh::Packet *pkt, const ContactInfo &from, uint8_t txt_type, uint32_t sender_timestamp, const char* text) {
@@ -900,6 +918,10 @@ void UITask::shutdown(bool restart){
     buzzer.loop();
 
   #endif // PIN_BUZZER
+
+#ifdef HAS_RGB_STATUS_LED
+  rgb_led.off();
+#endif
 
   if (restart) {
     _board->reboot();
@@ -1013,6 +1035,9 @@ void UITask::loop() {
   }
 
   userLedHandler();
+#ifdef HAS_RGB_STATUS_LED
+  rgb_led.loop();
+#endif
 
 #ifdef PIN_BUZZER
   if (buzzer.isPlaying())  buzzer.loop();

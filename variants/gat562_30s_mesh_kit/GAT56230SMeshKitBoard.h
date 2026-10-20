@@ -3,6 +3,9 @@
 #include <MeshCore.h>
 #include <Arduino.h>
 #include <helpers/NRF52Board.h>
+#ifdef HAS_RGB_STATUS_LED
+  #include <helpers/ui/RgbStatusLed.h>
+#endif
 
 
 class GAT56230SMeshKitBoard : public NRF52BoardDCDC {
@@ -36,10 +39,22 @@ public:
 #if defined(P_LORA_TX_LED)
   void onBeforeTransmit() override {
     digitalWrite(P_LORA_TX_LED, HIGH);   // turn TX LED on
+  #ifdef HAS_RGB_STATUS_LED
+    rgb_led.onTxStart();
+  #endif
   }
 
   void onAfterTransmit() override {
     digitalWrite(P_LORA_TX_LED, LOW);   // turn TX LED off
+  #ifdef HAS_RGB_STATUS_LED
+    rgb_led.onTxEnd();
+  #endif
+  }
+#endif
+
+#ifdef HAS_RGB_STATUS_LED
+  void onPacketReceived() override {
+    rgb_led.onPacketReceived();
   }
 #endif
 
