@@ -6,10 +6,10 @@
 /*
  * Status indicator on a single WS2812 (NeoPixel) RGB LED (WS2812_PIN).
  *
- *   - channel message received : strong green blinking for 3 s
- *   - direct message received  : strong white blinking for 3 s
- *   - LoRa transmit in progress: fast amber flicker (old HDD activity LED)
- *   - LoRa packet received     : short blue flash
+ *   - channel message received : white blinking (half brightness) for 3 s
+ *   - direct message received  : blue blinking (half brightness) for 3 s
+ *   - LoRa transmit in progress: fast red flicker (old HDD activity LED)
+ *   - LoRa packet received     : short burst of fast green flicker
  *
  * Event methods only record state; all LED writes happen in loop(), so they
  * are safe to call from board hooks (onBeforeTransmit, onPacketReceived).
@@ -26,15 +26,15 @@ public:
 
   void onTxStart() { _tx = true; }
   void onTxEnd() { _tx = false; }
-  void onPacketReceived() { _rx_until = millis() + RX_FLASH_MS; }
-  void onChannelMessage() { startBlink(0, 255, 0); }
-  void onDirectMessage() { startBlink(255, 255, 255); }
+  void onPacketReceived() { _rx_until = millis() + RX_BURST_MS; }
+  void onChannelMessage() { startBlink(128, 128, 128); }
+  void onDirectMessage() { startBlink(0, 0, 128); }
 
 private:
   static const uint32_t MSG_BLINK_MS = 3000;    // total duration of a message blink
-  static const uint32_t MSG_HALF_MS = 125;      // on/off half period (4 Hz)
-  static const uint32_t TX_FLICKER_MS = 30;     // toggle period while transmitting
-  static const uint32_t RX_FLASH_MS = 120;
+  static const uint32_t MSG_HALF_MS = 250;      // on/off half period (2 Hz)
+  static const uint32_t FLICKER_MS = 30;        // toggle period of the TX/RX flicker
+  static const uint32_t RX_BURST_MS = 240;      // length of the flicker burst per received packet
 
   void startBlink(uint8_t r, uint8_t g, uint8_t b);
   void show(uint32_t color);

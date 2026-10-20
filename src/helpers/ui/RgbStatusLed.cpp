@@ -37,10 +37,11 @@ void RgbStatusLed::loop() {
     bool on = ((now - _blink_start) / MSG_HALF_MS) % 2 == 0;
     show(on ? _blink_color : 0);
   } else if (_tx) {
-    bool on = (now / TX_FLICKER_MS) % 2 == 0;
-    show(on ? Adafruit_NeoPixel::Color(255, 70, 0) : 0);
+    bool on = (now / FLICKER_MS) % 2 == 0;
+    show(on ? Adafruit_NeoPixel::Color(255, 0, 0) : 0);
   } else if (_rx_until && (int32_t)(_rx_until - now) > 0) {
-    show(Adafruit_NeoPixel::Color(0, 0, 255));
+    bool on = (now / FLICKER_MS) % 2 == 0;
+    show(on ? Adafruit_NeoPixel::Color(0, 255, 0) : 0);
   } else {
     show(0);
   }
