@@ -18,10 +18,21 @@ void RgbStatusLed::off() {
   show(0);
 }
 
-void RgbStatusLed::startBlink(uint8_t r, uint8_t g, uint8_t b) {
+void RgbStatusLed::setEnabled(bool on) {
+  _enabled = on;
+  if (on) {
+    startBlink(0, 128, 0, 600);     // two green blinks: LED back on
+  } else {
+    _tx = false;
+    _rx_until = 0;
+    startBlink(128, 0, 0, 600);     // two red blinks, then dark
+  }
+}
+
+void RgbStatusLed::startBlink(uint8_t r, uint8_t g, uint8_t b, uint32_t ms) {
   _blink_color = Adafruit_NeoPixel::Color(r, g, b);
   _blink_start = millis();
-  _blink_until = _blink_start + MSG_BLINK_MS;
+  _blink_until = _blink_start + ms;
 }
 
 void RgbStatusLed::show(uint32_t color) {
@@ -33,6 +44,16 @@ void RgbStatusLed::show(uint32_t color) {
 
 void RgbStatusLed::loop() {
   uint32_t now = millis();
+  if (!_enabled) {
+    // keep only a pending feedback flash (eg. the one confirming "LED off")
+    if (_blink_until && (int32_t)(_blink_until - now) > 0) {
+      bool on = ((now - _blink_start) / MSG_HALF_MS) % 2 == 0;
+      show(on ? _blink_color : 0);
+    } else {
+      show(0);
+    }
+    return;
+  }
   if (_blink_until && (int32_t)(_blink_until - now) > 0) {
     bool on = ((now - _blink_start) / MSG_HALF_MS) % 2 == 0;
     show(on ? _blink_color : 0);

@@ -111,6 +111,8 @@ public:
   }
 
   void toggleBuzzer();
+  void toggleRgbLed();
+  void toggleDisplay();
   bool getGPSState();
   void toggleGPS();
 

@@ -23,6 +23,9 @@ public:
   void begin();
   void loop();
   void off();
+  void setEnabled(bool on);               // with a short green/red feedback blink
+  bool isEnabled() const { return _enabled; }
+  void flash(uint8_t r, uint8_t g, uint8_t b, uint32_t ms) { startBlink(r, g, b, ms); }   // eg. user feedback
 
   void onTxStart() { _tx = true; }
   void onTxEnd() { _tx = false; }
@@ -37,11 +40,12 @@ private:
   static const uint32_t RX_BURST_MS = 240;      // length of the flicker burst per received packet
   static const uint8_t ACTIVITY_LEVEL = 40;     // TX/RX flicker brightness (messages use 128)
 
-  void startBlink(uint8_t r, uint8_t g, uint8_t b);
+  void startBlink(uint8_t r, uint8_t g, uint8_t b, uint32_t ms = MSG_BLINK_MS);
   void show(uint32_t color);
 
   Adafruit_NeoPixel _pixel;
   uint32_t _last_color = 0;
+  bool _enabled = true;
   bool _tx = false;
   uint32_t _rx_until = 0;
   uint32_t _blink_start = 0, _blink_until = 0;

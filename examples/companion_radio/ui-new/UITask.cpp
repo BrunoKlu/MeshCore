@@ -759,6 +759,9 @@ void UITask::begin(DisplayDriver* display, SensorManager* sensors, NodePrefs* no
   buzzer.quiet(_node_prefs->buzzer_quiet);
   buzzer.startup();
 #endif
+#ifdef HAS_RGB_STATUS_LED
+  if (_node_prefs->rgb_quiet) { rgb_led.setEnabled(false); rgb_led.off(); }   // off() cancels the feedback blink
+#endif
 
 #ifdef PIN_VIBRATION
   vibration.begin();
@@ -977,6 +980,13 @@ void UITask::loop() {
   ev = back_btn.check();
   if (ev == BUTTON_EVENT_TRIPLE_CLICK) {
     c = handleTripleClick(KEY_SELECT);
+  } else if (ev == BUTTON_EVENT_DOUBLE_CLICK) {
+#ifdef HAS_RGB_STATUS_LED
+    checkDisplayOn(KEY_SELECT);
+    toggleRgbLed();
+#endif
+  } else if (ev == BUTTON_EVENT_CLICK) {
+    toggleDisplay();
   }
 #elif defined(PIN_USER_BTN)
   int ev = user_btn.check();
@@ -1184,6 +1194,25 @@ void UITask::toggleGPS() {
         break;
       }
     }
+  }
+}
+
+void UITask::toggleRgbLed() {
+#ifdef HAS_RGB_STATUS_LED
+  rgb_led.setEnabled(!rgb_led.isEnabled());
+  _node_prefs->rgb_quiet = !rgb_led.isEnabled();
+  the_mesh.savePrefs();
+  showAlert(rgb_led.isEnabled() ? "LED: ON" : "LED: OFF", 800);
+  _next_refresh = 0;  // trigger refresh
+#endif
+}
+
+void UITask::toggleDisplay() {
+  if (_display == NULL) return;
+  if (_display->isOn()) {
+    _display->turnOff();
+  } else {
+    checkDisplayOn(0);
   }
 }
 
