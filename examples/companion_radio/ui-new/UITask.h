@@ -15,6 +15,9 @@
 #ifdef PIN_BUZZER
   #include <helpers/ui/buzzer.h>
 #endif
+#ifdef HAS_RGB_STATUS_LED
+  #include <helpers/ui/RgbStatusLed.h>
+#endif
 #ifdef PIN_VIBRATION
   #include <helpers/ui/GenericVibration.h>
 #endif
@@ -107,6 +110,14 @@ public:
     return buzzer.isQuiet();
 #else
     return true;
+#endif
+  }
+
+  bool isRgbLedOff() {
+#ifdef HAS_RGB_STATUS_LED
+    return !rgb_led.isEnabled();
+#else
+    return false;
 #endif
   }
 

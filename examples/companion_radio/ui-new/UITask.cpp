@@ -180,14 +180,21 @@ class HomeScreen : public UIScreen {
       display.drawXbm(iconX - 9, iconY + 1, symbol, 8, 8);
     }
 
-    // show muted icon if buzzer is muted (shifted further left when the charging
-    // icon already occupies the slot immediately left of the battery)
+    // status icons left of the battery, one 9px slot each: charging, muted
+    // buzzer, disabled RGB LED (each only when applicable)
+    int slot = charging ? 2 : 1;
 #ifdef PIN_BUZZER
     if (_task->isBuzzerQuiet()) {
       display.setColor(UIColor::warning_txt);
-      display.drawXbm(iconX - (charging ? 18 : 9), iconY + 1, muted_icon, 8, 8);
+      display.drawXbm(iconX - 9 * slot, iconY + 1, muted_icon, 8, 8);
+      slot++;
     }
 #endif
+    if (_task->isRgbLedOff()) {
+      display.setColor(UIColor::warning_txt);
+      display.drawXbm(iconX - 9 * slot, iconY + 1, led_off_icon, 8, 8);
+      slot++;
+    }
   }
 
   CayenneLPP sensors_lpp;
