@@ -987,6 +987,9 @@ void UITask::loop() {
 #endif
   } else if (ev == BUTTON_EVENT_CLICK) {
     toggleDisplay();
+  } else if (ev == BUTTON_EVENT_LONG_PRESS) {
+    checkDisplayOn(KEY_SELECT);
+    showAlert(the_mesh.advert(true) ? "Flood advert sent!" : "Advert failed..", 1000);
   }
 #elif defined(PIN_USER_BTN)
   int ev = user_btn.check();

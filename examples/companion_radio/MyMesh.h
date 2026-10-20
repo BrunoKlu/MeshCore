@@ -121,7 +121,7 @@ public:
 
   void loop();
   void handleCmdFrame(size_t len);
-  bool advert();
+  bool advert(bool flood = false);   // flood: same as the app's "send flood advert"
   void enterCLIRescue();
 
   int  getRecentlyHeard(AdvertPath dest[], int max_num);
