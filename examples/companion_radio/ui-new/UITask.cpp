@@ -789,7 +789,7 @@ switch(t){
     buzzer.play(MELODY_CHANNEL_MSG);
     break;
   case UIEventType::ack:
-    buzzer.play(MELODY_ACK);
+    if (MELODY_ACK[0]) buzzer.play(MELODY_ACK);
     break;
   case UIEventType::roomMessage:
   case UIEventType::newContactMessage:

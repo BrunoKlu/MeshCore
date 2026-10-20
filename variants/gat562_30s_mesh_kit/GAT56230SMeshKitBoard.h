@@ -12,7 +12,7 @@
 // (sweep done by ear on 2026-10-20), with longer notes than the defaults.
 #define MELODY_CONTACT_MSG "dm:d=8,o=7,b=160:a,a#,a,16p,a"
 #define MELODY_CHANNEL_MSG "chan:d=8,o=7,b=160:a,g#"
-#define MELODY_ACK         "ack:d=16,o=7,b=160:a"
+#define MELODY_ACK         ""          // silent: no sound on acknowledgements
 
 #define GAT562_RUN_RUNNING 0xC1   // GPREGRET2 breadcrumb values (see the .cpp)
 #define GAT562_RUN_CLEAN   0xC2
