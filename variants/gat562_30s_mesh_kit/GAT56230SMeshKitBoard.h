@@ -8,6 +8,12 @@
 #endif
 
 
+// Melodies around A7 (3520 Hz), the loudest frequency of this board's piezo
+// (sweep done by ear on 2026-10-20), with longer notes than the defaults.
+#define MELODY_CONTACT_MSG "dm:d=8,o=7,b=160:a,a#,a,16p,a"
+#define MELODY_CHANNEL_MSG "chan:d=8,o=7,b=160:a,g#"
+#define MELODY_ACK         "ack:d=16,o=7,b=160:a"
+
 #define GAT562_RUN_RUNNING 0xC1   // GPREGRET2 breadcrumb values (see the .cpp)
 #define GAT562_RUN_CLEAN   0xC2
 
@@ -78,6 +84,18 @@ public:
               (int)!!(r & POWER_RESETREAS_OFF_Msk));
       return true;
     }
+#ifdef PIN_BUZZER
+    // CLI "buzz FREQ_HZ MS": one plain tone, to find the loudest frequency of the piezo
+    if (memcmp(command, "buzz ", 5) == 0) {
+      int freq = atoi(&command[5]);
+      const char* sp = strchr(&command[5], ' ');
+      int ms = sp ? atoi(sp + 1) : 300;
+      if (freq < 100 || freq > 20000 || ms < 10 || ms > 5000) { strcpy(reply, "ERR: buzz 100-20000 10-5000"); return true; }
+      tone(PIN_BUZZER, freq, ms);
+      sprintf(reply, "> buzz %d Hz %d ms", freq, ms);
+      return true;
+    }
+#endif
     return false;
   }
 

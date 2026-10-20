@@ -23,6 +23,17 @@
 
 #define LONG_PRESS_MILLIS   1200
 
+// Buzzer melodies (RTTTL); a variant may override them to suit its piezo
+#ifndef MELODY_CONTACT_MSG
+  #define MELODY_CONTACT_MSG "MsgRcv3:d=4,o=6,b=200:32e,32g,32b,16c7"
+#endif
+#ifndef MELODY_CHANNEL_MSG
+  #define MELODY_CHANNEL_MSG "kerplop:d=16,o=6,b=120:32g#,32c#"
+#endif
+#ifndef MELODY_ACK
+  #define MELODY_ACK "ack:d=32,o=8,b=120:c"
+#endif
+
 // Used both for recent adverts and discovered nodes
 #ifndef UI_RECENT_LIST_SIZE
   #define UI_RECENT_LIST_SIZE 4
@@ -772,13 +783,13 @@ void UITask::notify(UIEventType t) {
 switch(t){
   case UIEventType::contactMessage:
     // gemini's pick
-    buzzer.play("MsgRcv3:d=4,o=6,b=200:32e,32g,32b,16c7");
+    buzzer.play(MELODY_CONTACT_MSG);
     break;
   case UIEventType::channelMessage:
-    buzzer.play("kerplop:d=16,o=6,b=120:32g#,32c#");
+    buzzer.play(MELODY_CHANNEL_MSG);
     break;
   case UIEventType::ack:
-    buzzer.play("ack:d=32,o=8,b=120:c");
+    buzzer.play(MELODY_ACK);
     break;
   case UIEventType::roomMessage:
   case UIEventType::newContactMessage:
