@@ -3,6 +3,31 @@
 
 #include "GAT56230SMeshKitBoard.h"
 
+// RESETREAS as it was at power-up/reset, captured before SystemInit() and the
+// Arduino core touch the register (same trick as NRF52_POWER_MANAGEMENT).
+uint32_t gat562_reset_reason = 0;
+// GPREGRET2 breadcrumb: the bootloader leaves this register alone and it
+// survives any reset except a power-on. RUNNING is written at boot, CLEAN
+// before a deliberate reboot/power-off, so the next boot can tell a crash
+// (or external reset) from a clean restart or a power cycle (0).
+uint8_t gat562_prev_run = 0;
+static void __attribute__((constructor(101))) gat562_early_reset_capture() {
+  gat562_reset_reason = NRF_POWER->RESETREAS;
+  gat562_prev_run = NRF_POWER->GPREGRET2;
+  NRF_POWER->GPREGRET2 = GAT562_RUN_RUNNING;
+}
+
+void GAT56230SMeshKitBoard::markCleanStop() {
+  uint8_t sd_enabled = 0;
+  sd_softdevice_is_enabled(&sd_enabled);
+  if (sd_enabled) {
+    sd_power_gpregret_clr(1, 0xFF);
+    sd_power_gpregret_set(1, GAT562_RUN_CLEAN);
+  } else {
+    NRF_POWER->GPREGRET2 = GAT562_RUN_CLEAN;
+  }
+}
+
 
 #ifdef NRF52_POWER_MANAGEMENT
 // Static configuration for power management
