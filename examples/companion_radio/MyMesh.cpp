@@ -5,6 +5,9 @@
 #include <WiFi.h>
 #endif
 #include <Mesh.h>
+#ifdef HAS_RGB_STATUS_LED
+#include <helpers/ui/RgbStatusLed.h>
+#endif
 
 #define CMD_APP_START                 1
 #define CMD_SEND_TXT_MSG              2
@@ -286,6 +289,18 @@ uint32_t MyMesh::getDirectRetransmitDelay(const mesh::Packet *packet) {
 
 uint8_t MyMesh::getExtraAckTransmitCount() const {
   return _prefs.multi_acks;
+}
+
+void MyMesh::onInvalidRecv() {
+#ifdef HAS_RGB_STATUS_LED
+  rgb_led.onInvalidPacket();
+#endif
+}
+
+void MyMesh::onDuplicateRecv(mesh::Packet* packet) {
+#ifdef HAS_RGB_STATUS_LED
+  rgb_led.onDuplicatePacket();
+#endif
 }
 
 void MyMesh::logRxRaw(float snr, float rssi, const uint8_t raw[], int len) {

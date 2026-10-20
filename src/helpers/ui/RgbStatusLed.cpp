@@ -62,7 +62,7 @@ void RgbStatusLed::loop() {
     show(on ? Adafruit_NeoPixel::Color(ACTIVITY_LEVEL, 0, 0) : 0);
   } else if (_rx_until && (int32_t)(_rx_until - now) > 0) {
     bool on = (now / FLICKER_MS) % 2 == 0;
-    show(on ? Adafruit_NeoPixel::Color(0, ACTIVITY_LEVEL, 0) : 0);
+    show(on ? _rx_color : 0);
   } else {
     show(0);
   }

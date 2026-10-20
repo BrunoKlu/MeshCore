@@ -157,6 +157,7 @@ protected:
   virtual DispatcherAction onRecvPacket(Packet* pkt) = 0;
 
   virtual void logRxRaw(float snr, float rssi, const uint8_t raw[], int len) { }   // custom hook
+  virtual void onInvalidRecv() { }   // hook: received bytes could not be parsed as a packet
 
   virtual void logRx(Packet* packet, int len, float score) { }   // hooks for custom logging
   virtual void logTx(Packet* packet, int len) { }

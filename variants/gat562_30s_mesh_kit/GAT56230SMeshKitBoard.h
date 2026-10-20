@@ -65,6 +65,9 @@ public:
   void onPacketReceived() override {
     rgb_led.onPacketReceived();
   }
+  void onPacketRecvError() override {
+    rgb_led.onInvalidPacket();
+  }
 #endif
 
   // CLI "bootreason": raw RESETREAS captured before SystemInit() (see the

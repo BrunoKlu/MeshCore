@@ -51,6 +51,14 @@ protected:
   virtual bool filterRecvFloodPacket(Packet* packet) { return false; }
 
   /**
+   * \brief  Hook: a received packet was already seen (duplicate, eg. relayed by several nodes).
+   */
+  virtual void onDuplicateRecv(Packet* packet) { }
+
+  // _tables->wasSeen() + the onDuplicateRecv() hook when it is a duplicate
+  bool wasSeenAlready(Packet* packet);
+
+  /**
    * \brief  Check whether this packet should be forwarded (re-transmitted) or not.
    *     Is sub-classes responsibility to make sure given packet is only transmitted ONCE (by this node)
    */

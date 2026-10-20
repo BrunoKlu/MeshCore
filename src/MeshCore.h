@@ -54,6 +54,9 @@ public:
   // Called by the radio wrapper once a packet has been read from the radio
   // (eg. to drive an RX activity indicator). Default no-op.
   virtual void onPacketReceived() { }
+  // Called by the radio wrapper when the radio reported a packet but it could
+  // not be read (eg. CRC error). Default no-op.
+  virtual void onPacketRecvError() { }
   virtual void reboot() = 0;
   virtual void powerOff() { /* no op */ }
   // Called by example setup() functions to signal that boot is complete.

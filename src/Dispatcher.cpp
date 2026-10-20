@@ -208,6 +208,7 @@ void Dispatcher::checkRecv() {
           air_time = _radio->getEstAirtimeFor(len);
           rx_air_time += air_time;
         } else {
+          onInvalidRecv();
           _mgr->free(pkt);  // put back into pool
           pkt = NULL;
         }
