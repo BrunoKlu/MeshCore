@@ -35,6 +35,7 @@ private:
   static const uint32_t MSG_HALF_MS = 250;      // on/off half period (2 Hz)
   static const uint32_t FLICKER_MS = 30;        // toggle period of the TX/RX flicker
   static const uint32_t RX_BURST_MS = 240;      // length of the flicker burst per received packet
+  static const uint8_t ACTIVITY_LEVEL = 40;     // TX/RX flicker brightness (messages use 128)
 
   void startBlink(uint8_t r, uint8_t g, uint8_t b);
   void show(uint32_t color);
