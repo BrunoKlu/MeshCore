@@ -9,7 +9,12 @@
 #include <Adafruit_nRFCrypto.h>
 #endif
 
+#ifdef BLE_DFU_OPEN_RESET
+#include "nrf52/BLEDfuOpen.h"
+static BLEDfuOpen bledfu;   // reboots into an OPEN bootloader (no peer hand-over), see BLEDfuOpen.h
+#else
 static BLEDfu bledfu;
+#endif
 
 static void connect_callback(uint16_t conn_handle) {
   (void)conn_handle;
