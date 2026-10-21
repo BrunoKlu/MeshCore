@@ -1,5 +1,8 @@
 #include "MyMesh.h"
 #include <algorithm>
+#ifdef HAS_RGB_STATUS_LED
+#include <helpers/ui/RgbStatusLed.h>
+#endif
 
 /* ------------------------------ Config -------------------------------- */
 
@@ -465,6 +468,18 @@ const char *MyMesh::getLogDateTime() {
   sprintf(tmp, "%02d:%02d:%02d - %d/%d/%d U", dt.hour(), dt.minute(), dt.second(), dt.day(), dt.month(),
           dt.year());
   return tmp;
+}
+
+void MyMesh::onInvalidRecv() {
+#ifdef HAS_RGB_STATUS_LED
+  rgb_led.onInvalidPacket();
+#endif
+}
+
+void MyMesh::onDuplicateRecv(mesh::Packet* packet) {
+#ifdef HAS_RGB_STATUS_LED
+  rgb_led.onDuplicatePacket();
+#endif
 }
 
 void MyMesh::logRxRaw(float snr, float rssi, const uint8_t raw[], int len) {

@@ -8,6 +8,10 @@
   static UITask ui_task(board, display);
 #endif
 
+#ifdef HAS_RGB_STATUS_LED
+  #include <helpers/ui/RgbStatusLed.h>
+#endif
+
 #ifdef ETHERNET_ENABLED
   #define ETHERNET_CLI_BANNER "MeshCore Repeater CLI"
   #include <helpers/nrf52/EthernetCLI.h>
@@ -166,6 +170,9 @@ void loop() {
   }
 
   board.loop();   // let the board feed its watchdog, run periodic housekeeping
+#ifdef HAS_RGB_STATUS_LED
+  rgb_led.loop();
+#endif
 
 #ifdef ETHERNET_ENABLED
   ethernet_loop_maintain();
