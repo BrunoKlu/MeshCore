@@ -12,7 +12,7 @@
 // Prefs file name; a build can pick another one so that two roles flashed in
 // turn on the same device (eg. companion / repeater) keep separate settings.
 #ifndef CLI_PREFS_FILE
-#define CLI_PREFS_FILE CLI_PREFS_FILE
+#define CLI_PREFS_FILE "/prefs.json"
 #endif
 
 // Believe it or not, this std C function is busted on some platforms!

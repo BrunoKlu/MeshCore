@@ -2,13 +2,20 @@
 
 #include "../BaseSerialInterface.h"
 #include <bluefruit.h>
+#ifdef BLE_DFU_OPEN_RESET
+#include "BLEDfuOpen.h"
+#endif
 
 #ifndef BLE_TX_POWER
 #define BLE_TX_POWER 4
 #endif
 
 class SerialBLEInterface : public BaseSerialInterface {
+#ifdef BLE_DFU_OPEN_RESET
+  BLEDfuOpen bledfu;   // reboots into an OPEN bootloader (no bond hand-over), see BLEDfuOpen.h
+#else
   BLEDfu bledfu;
+#endif
   BLEUart bleuart;
   bool _isEnabled;
   bool _isDeviceConnected;
