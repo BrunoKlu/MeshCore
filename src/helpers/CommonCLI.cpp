@@ -9,6 +9,12 @@
 #define BRIDGE_MAX_BAUD 115200
 #endif
 
+// Prefs file name; a build can pick another one so that two roles flashed in
+// turn on the same device (eg. companion / repeater) keep separate settings.
+#ifndef CLI_PREFS_FILE
+#define CLI_PREFS_FILE CLI_PREFS_FILE
+#endif
+
 // Believe it or not, this std C function is busted on some platforms!
 static uint32_t _atoi(const char* sp) {
   uint32_t n = 0;
@@ -28,11 +34,11 @@ static bool isValidName(const char *n) {
 }
 
 void CommonCLI::loadPrefs(FILESYSTEM* fs) {
-  if (fs->exists("/prefs.json")) {
+  if (fs->exists(CLI_PREFS_FILE)) {
 #if defined(RP2040_PLATFORM)
-    File file = fs->open("/prefs.json", "r");
+    File file = fs->open(CLI_PREFS_FILE, "r");
 #else
-    File file = fs->open("/prefs.json");
+    File file = fs->open(CLI_PREFS_FILE);
 #endif
     if (file) {
       _prefs->loadSerial(file);   // new Serial prefs
@@ -142,12 +148,12 @@ void CommonCLI::loadPrefsInt(FILESYSTEM* fs, const char* filename) {  // Legacy 
 
 bool CommonCLI::savePrefs(FILESYSTEM* fs) {
 #if defined(NRF52_PLATFORM) || defined(STM32_PLATFORM)
-  fs->remove("/prefs.json");
-  File file = fs->open("/prefs.json", FILE_O_WRITE);
+  fs->remove(CLI_PREFS_FILE);
+  File file = fs->open(CLI_PREFS_FILE, FILE_O_WRITE);
 #elif defined(RP2040_PLATFORM)
-  File file = fs->open("/prefs.json", "w");
+  File file = fs->open(CLI_PREFS_FILE, "w");
 #else
-  File file = fs->open("/prefs.json", "w", true);
+  File file = fs->open(CLI_PREFS_FILE, "w", true);
 #endif
   if (file) {
     bool success = _prefs->saveSerial(file);
