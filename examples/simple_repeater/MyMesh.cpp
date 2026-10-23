@@ -482,6 +482,12 @@ void MyMesh::onDuplicateRecv(mesh::Packet* packet) {
 #endif
 }
 
+void MyMesh::onOwnEchoRecv(mesh::Packet* packet) {
+#ifdef HAS_RGB_STATUS_LED
+  rgb_led.onOwnEcho();
+#endif
+}
+
 void MyMesh::logRxRaw(float snr, float rssi, const uint8_t raw[], int len) {
 #if MESH_PACKET_LOGGING
   Serial.print(getLogDateTime());

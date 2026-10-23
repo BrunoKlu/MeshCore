@@ -55,8 +55,20 @@ protected:
    */
   virtual void onDuplicateRecv(Packet* packet) { }
 
+  /**
+   * \brief  Hook: a received packet is one this node sent itself (echoed back by a repeater).
+   */
+  virtual void onOwnEchoRecv(Packet* packet) { }
+
   // _tables->wasSeen() + the onDuplicateRecv() hook when it is a duplicate
   bool wasSeenAlready(Packet* packet);
+
+  // small ring of hashes of the packets this node sent, to tell own echoes from other duplicates
+  static const int SENT_HASHES = 8;
+  uint8_t _sent_hashes[SENT_HASHES][MAX_HASH_SIZE];
+  uint8_t _sent_idx = 0;
+  void rememberSent(const Packet* packet);
+  bool wasSentByMe(const Packet* packet) const;
 
   /**
    * \brief  Check whether this packet should be forwarded (re-transmitted) or not.
@@ -177,6 +189,7 @@ protected:
   Mesh(Radio& radio, MillisecondClock& ms, RNG& rng, RTCClock& rtc, PacketManager& mgr, MeshTables& tables)
     : Dispatcher(radio, ms, mgr), _rng(&rng), _rtc(&rtc), _tables(&tables)
   {
+    memset(_sent_hashes, 0, sizeof(_sent_hashes));
   }
 
   MeshTables* getTables() const { return _tables; }

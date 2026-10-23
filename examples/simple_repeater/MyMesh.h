@@ -137,6 +137,7 @@ protected:
   void logRxRaw(float snr, float rssi, const uint8_t raw[], int len) override;
   void onInvalidRecv() override;
   void onDuplicateRecv(mesh::Packet* packet) override;
+  void onOwnEchoRecv(mesh::Packet* packet) override;
 
   void logRx(mesh::Packet* pkt, int len, float score) override;
   void logTx(mesh::Packet* pkt, int len) override;

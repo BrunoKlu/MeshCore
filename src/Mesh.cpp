@@ -648,6 +648,7 @@ void Mesh::sendFlood(Packet* packet, uint32_t delay_millis, uint8_t path_hash_si
   packet->header |= ROUTE_TYPE_FLOOD;
   packet->setPathHashSizeAndCount(path_hash_size, 0);
 
+  rememberSent(packet);
   _tables->markSeen(packet); // mark this packet as already sent in case it is rebroadcast back to us
 
   uint8_t pri;
@@ -677,6 +678,7 @@ void Mesh::sendFlood(Packet* packet, uint16_t* transport_codes, uint32_t delay_m
   packet->transport_codes[1] = transport_codes[1];
   packet->setPathHashSizeAndCount(path_hash_size, 0);
 
+  rememberSent(packet);
   _tables->markSeen(packet); // mark this packet as already sent in case it is rebroadcast back to us
 
   uint8_t pri;
@@ -710,6 +712,7 @@ void Mesh::sendDirect(Packet* packet, const uint8_t* path, uint8_t path_len, uin
       pri = 0;
     }
   }
+  rememberSent(packet);
   _tables->markSeen(packet); // mark this packet as already sent in case it is rebroadcast back to us
   sendPacket(packet, pri, delay_millis);
 }
@@ -720,6 +723,7 @@ void Mesh::sendZeroHop(Packet* packet, uint32_t delay_millis) {
 
   packet->path_len = 0;  // path_len of zero means Zero Hop
 
+  rememberSent(packet);
   _tables->markSeen(packet); // mark this packet as already sent in case it is rebroadcast back to us
 
   sendPacket(packet, 0, delay_millis);
@@ -733,6 +737,7 @@ void Mesh::sendZeroHop(Packet* packet, uint16_t* transport_codes, uint32_t delay
 
   packet->path_len = 0;  // path_len of zero means Zero Hop
 
+  rememberSent(packet);
   _tables->markSeen(packet); // mark this packet as already sent in case it is rebroadcast back to us
 
   sendPacket(packet, 0, delay_millis);
@@ -740,8 +745,26 @@ void Mesh::sendZeroHop(Packet* packet, uint16_t* transport_codes, uint32_t delay
 
 bool Mesh::wasSeenAlready(Packet* packet) {
   if (_tables->wasSeen(packet)) {
-    onDuplicateRecv(packet);
+    if (wasSentByMe(packet)) {
+      onOwnEchoRecv(packet);
+    } else {
+      onDuplicateRecv(packet);
+    }
     return true;
+  }
+  return false;
+}
+
+void Mesh::rememberSent(const Packet* packet) {
+  packet->calculatePacketHash(_sent_hashes[_sent_idx]);
+  _sent_idx = (_sent_idx + 1) % SENT_HASHES;
+}
+
+bool Mesh::wasSentByMe(const Packet* packet) const {
+  uint8_t hash[MAX_HASH_SIZE];
+  packet->calculatePacketHash(hash);
+  for (int i = 0; i < SENT_HASHES; i++) {
+    if (memcmp(hash, _sent_hashes[i], MAX_HASH_SIZE) == 0) return true;
   }
   return false;
 }

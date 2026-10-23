@@ -31,8 +31,9 @@ public:
 
   void onTxStart() { _tx = true; }
   void onTxEnd() { _tx = false; }
-  void onPacketReceived() { startRx(0, ACTIVITY_LEVEL, 0); }
-  void onDuplicatePacket() { startRx(ACTIVITY_LEVEL, ACTIVITY_LEVEL / 2, 0); }   // yellow/orange
+  void onPacketReceived() { startRx(0, ACTIVITY_LEVEL, 0); }                              // green, has priority
+  void onDuplicatePacket() { startRx(ACTIVITY_LEVEL, ACTIVITY_LEVEL / 2, 0, true); }     // yellow/orange: already seen
+  void onOwnEcho() { startRx(0, ACTIVITY_LEVEL, ACTIVITY_LEVEL, true); }                // cyan: my own packet relayed back
   void onInvalidPacket() { startRx(ACTIVITY_LEVEL, 0, ACTIVITY_LEVEL); }          // magenta
   void onChannelMessage() { startBlink(128, 128, 128); }
   void onDirectMessage() { startBlink(0, 0, 128); }
@@ -45,7 +46,9 @@ private:
   static const uint8_t ACTIVITY_LEVEL = 40;     // TX/RX flicker brightness (messages use 128)
 
   void startBlink(uint8_t r, uint8_t g, uint8_t b, uint32_t ms = MSG_BLINK_MS);
-  void startRx(uint8_t r, uint8_t g, uint8_t b) {
+  // weak = must not replace a green (new packet) burst still running
+  void startRx(uint8_t r, uint8_t g, uint8_t b, bool weak = false) {
+    if (weak && _rx_color == Adafruit_NeoPixel::Color(0, ACTIVITY_LEVEL, 0) && (int32_t)(_rx_until - millis()) > 0) return;
     _rx_color = Adafruit_NeoPixel::Color(r, g, b);
     _rx_until = millis() + RX_BURST_MS;
   }

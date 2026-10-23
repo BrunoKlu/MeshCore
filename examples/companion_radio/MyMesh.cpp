@@ -303,6 +303,12 @@ void MyMesh::onDuplicateRecv(mesh::Packet* packet) {
 #endif
 }
 
+void MyMesh::onOwnEchoRecv(mesh::Packet* packet) {
+#ifdef HAS_RGB_STATUS_LED
+  rgb_led.onOwnEcho();
+#endif
+}
+
 void MyMesh::logRxRaw(float snr, float rssi, const uint8_t raw[], int len) {
   if (_serial->isConnected() && len + 3 <= MAX_FRAME_SIZE) {
     int i = 0;
